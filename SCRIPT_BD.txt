@@ -1,0 +1,1303 @@
+*****************************************************************************************************************************************************
+Script original, puede dar errores en versiones anteriores a 2012 de SQL Server debido a los tipo de datos date y time
+*****************************************************************************************************************************************************
+
+create database ABM_Automoviles
+go 
+use ABM_Automoviles
+go
+
+--Creacion de Tablas
+create table Tipos_Clientes
+(
+	id_tipoCliente int identity(1,1),
+	Tipo varchar(50) not null,
+	constraint PK_TiposCientes primary key (id_tipoCliente)
+)
+
+create table Tipos_Documentos
+(
+	id_tipoDocumento int identity(1,1),
+	Tipo varchar(40) not null,
+	constraint PK_TiposDocumentos primary key (id_tipoDocumento)
+)
+
+create table Paises
+(
+	id_pais int identity(1,1),
+	Pais varchar(50) not null,
+	constraint PK_Paises primary key (id_pais)
+)
+
+create table Provincias
+(
+	id_provincia int identity(1,1),
+	Provincia varchar(50) not null,
+	id_pais int,
+	constraint PK_Provincias primary key (id_provincia),
+	constraint fk_Paises_Provincias foreign key (id_pais) references Paises(id_pais)
+)
+
+create table Localidades
+(
+	id_localidad int identity(1,1),
+	Localidad varchar(60) not null,
+	id_provincia int,
+	constraint PK_Localidades primary key (id_localidad),
+	constraint fk_Provincias_Localidades foreign key (id_provincia) references Provincias(id_provincia)
+)
+
+create table Barrios
+(
+	id_barrio int identity(1,1),
+	Barrio varchar(60) not null,
+	id_localidad int,
+	constraint PK_Barrios primary key (id_barrio),
+	constraint fk_Localidades_Barrios foreign key (id_localidad) references Localidades(id_localidad)
+)
+
+create table Tipos_Contactos
+(
+	id_tipoContacto int identity(1,1),
+	Tipo varchar(40) not null,
+	constraint PK_TiposContactos primary key (id_tipoContacto)
+)
+
+create table Clientes
+(
+	id_cliente int identity(1,1),
+	Nombre varchar(80)not null,
+	Apellido varchar(80),
+	id_tipoDocumento int,
+	nro_Documento bigint,
+	id_tipoCliente int,
+	Direccion varchar(110),
+	id_barrio int,
+	constraint PK_Clientes primary key (id_cliente),
+	constraint fk_TiposDocumetnos_Clientes foreign key (id_tipoDocumento) references Tipos_Documentos(id_tipoDocumento),
+	constraint fk_TiposClientes_Clientes foreign key (id_tipoCliente) references Tipos_Clientes(id_TipoCliente),
+	constraint fk_Barrios_Clientes foreign key (id_barrio) references Barrios(id_barrio)
+)
+
+create table Contactos_Clientes
+(
+	id_contactoCliente int identity(1,1),
+	id_cliente int,
+	id_tipoContacto int,
+	Contacto varchar(100) not null,
+	constraint PK_ContactosClientes primary key (id_contactoCliente),
+	constraint fk_Clientes_ContactosClientes foreign key (id_cliente) references Clientes(id_cliente),
+	constraint fk_TiposDeContactos_ContactosClientes foreign key (id_tipoContacto) references Tipos_Contactos(id_tipoContacto)
+)
+
+create table Vendedores
+(
+	id_vendedor int identity(1,1),
+	Nombre varchar(80)not null,
+	Apellido varchar(80) not null,
+	id_tipoDocumento int,
+	nro_Documento bigint,
+	Direccion varchar(110),
+	id_barrio int,
+	constraint PK_Vendedores primary key (id_vendedor),
+	constraint fk_TiposDocumentos_Clientes foreign key (id_tipoDocumento) references Tipos_Documentos(id_tipoDocumento),
+	constraint fk_Barrios_Vendedores foreign key (id_barrio) references Barrios(id_barrio)
+)
+
+create table Contactos_Vendedores
+(
+	id_contactoVendedor int identity(1,1),
+	id_vendedor int,
+	id_tipoContacto int,
+	Contacto varchar(100) not null,
+	constraint PK_ContactosVendedores primary key (id_contactoVendedor),
+	constraint fk_Vendedores_ContactosVendedores foreign key (id_vendedor) references Vendedores(id_vendedor),
+	constraint fk_TiposDeContactos_ContactosVendedores foreign key (id_tipoContacto) references Tipos_Contactos(id_tipoContacto)
+)
+
+create table Facturas
+(
+	id_factura int identity(1,1),
+	Fecha datetime not null,
+	Hora time not null,
+	id_cliente int,
+	id_vendedor int,
+	constraint PK_Facturas primary key (id_factura),
+	constraint fk_Vendedores_Facturas foreign key (id_vendedor) references Vendedores(id_vendedor),
+	constraint fk_Cliente_Facturas foreign key (id_cliente) references Clientes(id_cliente),
+)
+
+create table Medios_De_Pago
+(
+	id_medio_de_pago int identity(1,1),
+	Medio varchar(80) not null,
+	constraint PK_MediosDePago primary key (id_medio_de_pago)
+)
+
+create table MediosDePago_Facturas
+(
+	id_pago int identity(1,1),
+	id_factura int,
+	id_medio_de_pago int,
+	Monto smallmoney not null,
+	constraint PK_MP_Facutras primary key (id_pago),
+	constraint fk_MediosDePago_MedPagoFacturas foreign key (id_medio_de_pago) references Medios_De_Pago(id_medio_de_pago),
+	constraint fk_Facturas_MedPagoFacturas foreign key (id_factura) references Facturas(id_factura)
+)
+
+create table Marcas
+(
+	id_marca int identity(1,1),
+	Marca varchar(30) not null,
+	constraint PK_Marcas primary key (id_marca)
+)
+
+
+create table Colores
+(
+	id_Color int identity(1,1),
+	Color varchar(50) not null,
+	Cod_color_Hexa varchar(8),
+	constraint PK_Colores primary key (id_color)
+)
+
+create table Tipos_Cajas_Velocidad
+(
+	id_cajaVelocidad int identity(1,1),
+	Tipo varchar(20) not null,
+	constraint PK_TiposCajasVelocidad primary key (id_cajaVelocidad)
+)
+
+create table Tipos_Direcciones
+(
+	id_tipoDireccion int identity(1,1),
+	Tipo varchar(40) not null,
+	constraint PK_TiposDirecciones primary key(id_TipoDireccion)
+)
+
+create table Combustibles
+(
+	id_combustible int identity(1,1),
+	Combustible varchar(20) not null,
+	constraint PK_Combustibles primary key(id_combustible)
+)
+
+create table Autos
+(
+	id_automovil int identity(1,1),
+	id_marca int,
+	Modelo varchar(30) not null,
+	Año int,
+	Dimenciones varchar(30),
+	Motor varchar(20),
+	id_combustible int,
+	id_cajaVelocidad int,
+	Velocidades tinyint,
+	id_tipoDireccion int,
+	id_Color int,
+	Cantidad_puertas tinyint,
+	Tamaño_llantas char(5),
+	Cantidad_AirBags tinyint,
+	Camara_de_Retroceso bit,
+	Sensores_lluvia_parabrisas bit,
+	Techo_cielo bit,
+	Climatizador_biZona bit,
+	LevantaVidrio_automatico bit,
+	Audio_Conectividad varchar(100),
+	Cierre_Centralizado bit,
+	constraint PK_Autos primary key (id_automovil),
+	constraint fk_Marcas_Autos foreign key (id_marca) references Marcas(id_marca),
+	constraint fk_Combustibles_Autos foreign key (id_combustible) references Combustibles(id_combustible),
+	constraint fk_TiposCajasVelocidad_Autos foreign key (id_cajaVelocidad) references Tipos_Cajas_Velocidad(id_cajaVelocidad),
+	constraint fk_TiposDirecciones_Autos foreign key (id_TipoDireccion) references Tipos_Direcciones(id_tipoDireccion),
+	constraint fk_Colores_Autos foreign key (id_Color) references Colores(id_Color)
+)
+
+create table Autopartes
+(
+	id_autoparte int identity(1,1),
+	id_marca int,
+	Modelo varchar(60) not null,
+	id_pais_Origen int,
+	descripcion varchar(90),
+	Stock int,
+	constraint PK_Autopartes primary key (id_autoparte),
+	constraint fk_Marcas_Autopartes foreign key (id_marca) references Marcas(id_marca),
+	constraint fk_Paises_Autopartes foreign key (id_pais_Origen) references Paises(id_pais)
+)
+
+create table Tipos_Productos
+(
+	id_tipoProducto int identity(1,1),
+	Tipo varchar(30),
+	constraint PK_TiposProductos primary key (id_tipoProducto)
+)
+
+
+create table Productos
+(
+	id_producto int identity (1,1),
+	id_tipoProducto int,
+	id_automovil int,
+	id_autoparte int,
+	Precio money,
+	constraint PK_id_producto primary key (id_producto),
+	constraint fk_Autos_Productos foreign key (id_automovil) references Autos(id_automovil),
+	constraint fk_Autopartes_Productos foreign key (id_autoparte) references Autopartes(id_autoparte),
+	constraint fk_TiposProductos_Productos foreign key (id_tipoProducto) references Tipos_Productos(id_tipoProducto),
+)
+
+create table Detalle_Factura
+(
+	id_detalle_factura int identity(1,1),
+	id_factura int,
+	id_producto int,
+	Cantidad int,
+	Precio money,
+	constraint PK_DetalleFactura primary key (id_detalle_factura),
+	constraint fk_Facturas_DetalleFactura foreign key (id_factura) references Facturas(id_factura),
+	constraint fk_Productos_DetalleFactura foreign key (id_producto) references Productos(id_producto)
+)
+
+create table Ordenes_de_Pedidos
+(
+	id_orden_pedido int identity(1,1),
+	id_factura int,
+	fecha_entrega date,
+	forma_de_entrega varchar(100),
+	constraint PK_OrdenPedido primary key (id_orden_pedido),
+	constraint fk_Facturas_OrdenesDePedidos foreign key (id_factura) references Facturas(id_factura)
+)
+
+create table Detalle_Pedido
+(
+	id_detalle_pedido int identity(1,1),
+	id_orden_pedido int,
+	id_producto int,
+	Cantidad int,
+	Descripcion varchar(60),
+	constraint PK_id_detalle_pedido primary key (id_detalle_pedido),
+	constraint fk_OrdenPedido_DetallePedido foreign key (id_orden_pedido) references Ordenes_de_Pedidos(id_orden_pedido),
+	constraint fk_Productos_DetallePedido foreign key (id_producto) references Productos(id_producto)
+)
+
+create table Historial
+(
+	id_historial int identity(1,1),
+	id_producto int,
+	Fecha date,
+	constraint PK_Historial primary key (id_historial),
+	constraint fk_Productos_Historial foreign key (id_producto) references Productos(id_producto)
+)
+
+Go
+
+--Inserts
+
+--Paises
+insert into Paises values('Argentina')
+insert into Paises values('Brasil')
+insert into Paises values('Perú')
+insert into Paises values('Chile')
+insert into Paises values('Estados Unidos')
+insert into Paises values('China')
+insert into Paises values('España')
+insert into Paises values('Finlandia')
+insert into Paises values('Francia')
+insert into Paises values('Paraguay')
+insert into Paises values('Uruguay')
+insert into Paises values('Colombia')
+insert into Paises values('Mexico')
+
+--Provincias
+insert into Provincias values('Córdoba', 1)
+insert into Provincias values('Buenos Aires', 1)
+insert into Provincias values('San Luis', 1)
+insert into Provincias values('Jujuy', 1)
+insert into Provincias values('Catamarca', 1)
+insert into Provincias values('Santiago del Estero', 1)
+insert into Provincias values('Tierra del Fuego', 1)
+insert into Provincias values('Neuquén', 1)
+insert into Provincias values('Chaco', 1)
+insert into Provincias values('Chubut', 1)
+insert into Provincias values('Corrientes', 1)
+insert into Provincias values('Entre Ríos', 1)
+insert into Provincias values('La Pampa', 1)
+insert into Provincias values('La Rioja', 1)
+insert into Provincias values('Formosa', 1)
+insert into Provincias values('Mendoza', 1)
+insert into Provincias values('Misiones', 1)
+insert into Provincias values('Río Negro', 1)
+insert into Provincias values('San Juan', 1)
+insert into Provincias values('Santa Cruz', 1)
+insert into Provincias values('Santa Fe', 1)
+insert into Provincias values('Tucuman', 1)
+insert into Provincias values('Salta', 1)
+
+--Localidades
+insert into Localidades values('Córdoba', 1)
+insert into Localidades values('El Chingolo', 1)
+insert into Localidades values('Unquillo', 1)
+insert into Localidades values('Villa Allende', 1)
+insert into Localidades values('Saldan', 1)
+INSERT INTO Localidades VALUES('Agua pintada', 1) 
+INSERT INTO Localidades VALUES('Alta Gracia', 1) 
+INSERT INTO Localidades VALUES('Bajo Grande', 1) 
+INSERT INTO Localidades VALUES('Capilla De Siton', 1) 
+INSERT INTO Localidades VALUES('Agua De Oro', 1) 
+
+--Barrios
+insert into Barrios values ('San Pedro', 1)
+INSERT INTO Barrios VALUES ('Centro', 1) 
+INSERT INTO Barrios VALUES ('Alto Alberdi', 1) 
+INSERT INTO Barrios VALUES ('Observatorio', 1) 
+INSERT INTO Barrios VALUES ('Jardin', 1) 
+INSERT INTO Barrios VALUES ('General Paz', 1) 
+INSERT INTO Barrios VALUES ('Pueyrredon', 1) 
+INSERT INTO Barrios VALUES ('Parque Horizonte II', 7) 
+INSERT INTO Barrios VALUES ('San Martín', 1) 
+INSERT INTO Barrios VALUES ('San Vicente', 1) 
+INSERT INTO Barrios VALUES ('Junior', 8) 
+INSERT INTO Barrios VALUES ('Maipú', 1) 
+INSERT INTO Barrios VALUES ('Panamericano', 1) 
+INSERT INTO Barrios VALUES ('Pand de Azucar',4)
+
+--Tipos de Documentos
+insert into Tipos_Documentos values('DNI')
+insert into Tipos_Documentos values('Pasaporte')
+insert into Tipos_Documentos values('Cédula de Ciudadania')
+insert into Tipos_Documentos values('CUIT/CUIL')
+
+--Tipos de Clientes
+insert into Tipos_Clientes values('Consumidor Final')
+insert into Tipos_Clientes values('Empresa')
+insert into Tipos_Clientes values('Concesionario')
+insert into Tipos_Clientes values('Vendedora de Autopartes')
+
+--Tipos de Contactos
+insert into Tipos_Contactos values ('Telefono')
+insert into Tipos_Contactos values ('Email')
+insert into Tipos_Contactos values ('Instragram')
+insert into Tipos_Contactos values ('Facebook')
+
+--Clientes Cons. finales												
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Perez', 'Rodolfo','San Martin 120', 1, 1, 1, 29654897)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Castillo', 'Marta Analia','Pedro Lozano 1450', 7, 1, 1, 33698754)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Abarca', 'Hector','Luis Gongora 160', 12, 1, 1, 40201314)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Morales','Santiago','Leon y Pizarro 55', 2, 1, 2, 155471516)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Perez', 'Carlos Antonio','A. Garzon 455', 3, 1, 1, 4054466)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Morales', 'Osvaldo','Los Alamos 99', 2, 1, 1, 15549416)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Paez', 'Roque','Humberto Primo 79', 11, 1, 2, 4262630)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Luque', 'Elvira Josefa','Mariano Usandivaras 360', 3, 1, 1, 14502829)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Ruiz', 'Marcos','Rivera Indarte 780', 1, 1, 1, 33954251)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Moriel', 'Roberto','Santa Rosa 73', 9, 1, 1, 41856842)
+--Cli. Empresas
+insert into Clientes (Nombre, Apellido, id_tipoDocumento, nro_Documento, id_tipoCliente, Direccion, id_barrio) values ('Centro Diesel', '', 4, 321657820, 2, 'Juan B. Justo 4047', 5)
+insert into Clientes (Nombre, Apellido,id_tipoDocumento, nro_Documento, id_tipoCliente, Direccion, id_barrio) values ('Fes Electro Mecánica', '', 4, 122546820, 2, ' Alto Ameghino', 4)
+insert into Clientes (Nombre, Apellido,id_tipoDocumento, nro_Documento, id_tipoCliente, Direccion, id_barrio) values ('Bertolotto Car Center', '', 4, 12287657820,2,'Monseñor Pablo Cabrera 3945', 1)
+insert into Clientes (Nombre, Apellido,id_tipoDocumento, nro_Documento, id_tipoCliente, Direccion, id_barrio) values ('Galia Service', '', 4, 945457820,2, 'Dirección: Sabattini 3995', 2)
+--Cli. Concesionario
+insert into Clientes (Nombre, Apellido, id_tipoDocumento,nro_Documento,id_tipoCliente,Direccion,id_barrio) values ('Toyota', '', 4, 20446543200,3, 'Av. del Libertador 6777', 2)
+insert into Clientes (Nombre, Apellido, id_tipoDocumento,nro_Documento,id_tipoCliente,Direccion,id_barrio) values ('Ford', '', 4, 12408076859,3, 'Juan Antonio Lavalleja 799', 3)
+insert into Clientes (Nombre, Apellido, id_tipoDocumento,nro_Documento,id_tipoCliente,Direccion,id_barrio) values ('Chevrolet', '', 4, 19329866785, 3, 'Av. fuerza aérea 3712', 1)
+insert into Clientes (Nombre, Apellido, id_tipoDocumento,nro_Documento,id_tipoCliente,Direccion,id_barrio) values ('NISSAN', '', 4, 12287657820, 3, 'Av. Santa Ana 6363', 6)
+--Cli vend. autopartes
+insert into clientes (Nombre, Apellido, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Todo Fiat', '', 'Av. Colón 1655', 2, 4, 4, 306588454)
+insert into clientes (Nombre, Apellido, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Corven', '', 'San Jeronimo 763', 7, 4, 4, 296584582)
+insert into clientes (Nombre, Apellido,Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Todo Fiat', '', 'Av. Colón 1655', 2, 4, 4, 306588454)
+
+--Contactos Clientes
+insert into Contactos_Clientes values(1,1,'351 7918702')
+insert into Contactos_Clientes values(2,2,'madrededios@wl.mart')
+insert into Contactos_Clientes values(3,3,'Alberto Juanes')
+
+--Vendedores
+INSERT INTO vendedores VALUES ('Rodrigo', 'Benitez', 1, 35620340, 'Media Luna 897' ,2)
+INSERT INTO vendedores VALUES ('Marcelo', 'Rodriguez',1,37450639, 'Lago Perdido 1000' ,3)
+INSERT INTO vendedores VALUES ('Pedro', 'Gonzales', 1, 39240566, 'La macarena 357' ,4)
+INSERT INTO vendedores VALUES ('Roman', 'Ramirez', 1, 24530125, 'Malaga 758' ,2)
+INSERT INTO vendedores VALUES ('Nestor', 'Fernandez', 1, 25053013, 'Alicante 111' ,1)
+INSERT INTO vendedores VALUES ('Victor', 'Valdez', 1, 27854931, 'Venecia 231' ,8)
+INSERT INTO vendedores VALUES ('Miguel', 'Antipan', 1, 29358120, 'San Sebastian 555' ,6)
+INSERT INTO vendedores VALUES ('Lucas', 'Bustos', 1, 22367812, 'Torino 330' ,5)
+INSERT INTO vendedores VALUES ('Fabrizio', 'Peralta', 1, 39954321, 'Recoletos 324' ,13)
+
+--Contactos Vendedores
+insert into Contactos_Vendedores values(1,1,'351 992154')
+insert into Contactos_Vendedores values(2,2,'olmedios@utn.edu.ar')
+insert into Contactos_Vendedores values(3,3,'Vendo Pastafrolas')
+
+--FACTURAS
+insert into Facturas values('13/02/18','20:00', 1, 1)
+insert into Facturas values('24/06/19','09:00', 6, 2)
+insert into Facturas values('27/05/14','16:00', 3, 3)
+insert into Facturas values('09/12/17','10:00', 8, 4)
+insert into Facturas values('08/08/16','7:00', 4, 5)
+insert into Facturas values('03/07/09','20:00', 5, 6)
+insert into Facturas values('07/04/18','20:00', 12, 7)	
+insert into Facturas values('09/10/13','20:00', 10, 8)
+insert into Facturas values('02/11/06','20:00', 9, 9)
+insert into Facturas values('05/01/15','20:00', 1, 9)
+
+--Medios de Pago
+insert into Medios_De_Pago values('Efectivo')
+insert into Medios_De_Pago values('Autoplan')
+insert into Medios_De_Pago values('Tarjeta de Débito')
+insert into Medios_De_Pago values('Tarjeta de Credito')
+
+--MedioPago_Facturas 
+insert into MediosDePago_Facturas values(1, 4, 5000)
+insert into MediosDePago_Facturas values(1, 1, 5000)
+insert into MediosDePago_Facturas values(2, 4, 1234)
+insert into MediosDePago_Facturas values(3, 4, 999)
+insert into MediosDePago_Facturas values(4, 4, 1598)
+insert into MediosDePago_Facturas values(5, 4, 5465)
+insert into MediosDePago_Facturas values(6, 4, 3478)
+insert into MediosDePago_Facturas values(7, 4, 95200)
+insert into MediosDePago_Facturas values(8, 4, 48500)
+insert into MediosDePago_Facturas values(9, 4, 8770)
+insert into MediosDePago_Facturas values(10, 4, 50560)
+insert into MediosDePago_Facturas values(10, 4, 1500)
+
+--MARCAS
+INSERT INTO Marcas VALUES ('Alfa Romeo')
+INSERT INTO Marcas VALUES ('Audi')
+INSERT INTO Marcas VALUES ('BMW')
+INSERT INTO Marcas VALUES ('Bugatti')
+INSERT INTO Marcas VALUES ('Citroen')
+INSERT INTO Marcas VALUES ('Ferrari')
+INSERT INTO Marcas VALUES ('Fiat')
+INSERT INTO Marcas VALUES ('Ford')
+INSERT INTO Marcas VALUES ('Honda')
+INSERT INTO Marcas VALUES ('Hyundai')
+INSERT INTO Marcas VALUES ('Jeep')
+INSERT INTO Marcas VALUES ('Lamborghini')
+INSERT INTO Marcas VALUES ('Mazda')
+INSERT INTO Marcas VALUES ('Mercedes-Benz')
+INSERT INTO Marcas VALUES ('Mitsubishi') 
+INSERT INTO Marcas VALUES ('Nissan') 
+INSERT INTO Marcas VALUES ('Peugeot')
+INSERT INTO Marcas VALUES ('Porsche')
+INSERT INTO Marcas VALUES ('Renault')
+INSERT INTO Marcas VALUES ('Suzuki')
+INSERT INTO Marcas VALUES ('Tesla')
+INSERT INTO Marcas VALUES ('Toyota')
+INSERT INTO Marcas VALUES ('Volkswagen') 
+
+--COMBUSTIBLES
+INSERT INTO Combustibles values ('GNC')
+INSERT INTO Combustibles values ('Nafta')
+INSERT INTO Combustibles values ('Diesel')
+INSERT INTO Combustibles values ('Eléctrico')
+
+--COLORES
+INSERT INTO Colores Values( 'Amarillo', '#D4D424' )
+INSERT INTO Colores Values( 'Azul', '#112DE5')
+INSERT INTO Colores Values( 'Azul marino', '#0D1864')
+INSERT INTO Colores Values( 'Azul francia', '#384388')
+INSERT INTO Colores Values( 'Blanco', '#FFFFFF')
+INSERT INTO Colores Values( 'Celeste', '#21DCDD')
+INSERT INTO Colores Values( 'Esmeralda', '#06ECAC')
+INSERT INTO Colores Values( 'Gris', '#606161')
+INSERT INTO Colores Values( 'Marrón', '#360303')
+INSERT INTO Colores Values( 'Morado', '#4C0F51')
+INSERT INTO Colores Values( 'Naranja', '#E7820A')
+INSERT INTO Colores Values( 'Negro', '#000000')
+INSERT INTO Colores Values( 'Verde militar', '#204F1B') 
+
+--TIPOS_CAJA_VELOCIDAD
+INSERT INTO Tipos_Cajas_Velocidad VALUES('Manual')
+INSERT INTO Tipos_Cajas_Velocidad VALUES('Automática')
+INSERT INTO Tipos_Cajas_Velocidad VALUES('Variación continua')
+
+--TIPOS_DIRECCIONES
+INSERT INTO Tipos_Direcciones VALUES('Mecánica')
+INSERT INTO Tipos_Direcciones VALUES('Hidráulica')
+INSERT INTO Tipos_Direcciones VALUES('Eléctrica')
+INSERT INTO Tipos_Direcciones VALUES('Electrohidráulica')
+
+						             
+--Autos					
+insert into autos values(5, 'C4 Cactus', 2018, '4201x2040x1460mm', '1.8', 2, 1, 6, 2, 5, 3, '20"', 2, 1, 1, 0, 0, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(17, '308 S', 2018, '4253x2043x1458mm', '2.0', 2, 2, 6, 3, 12, 5, '17"', 6, 1, 1, 1, 1, 1, 'Pantalla Multi-Táctil 9,7" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(17, '208 Allure', 2019, '3900x2039x1450mm', '1.6', 2, 1, 5, 4, 9, 3, '18"', 2, 0, 1, 0, 0, 1, 'Pantalla Multi-Táctil 8" c/ entrada USB', 1)
+insert into autos values(9, 'City', 2017, '4000x2000x1400mm', '2.0', 3, 2, 6, 3, 12, 5, '20"', 2, 0, 0, 0, 1, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(1, 'Mito Veloce', 2016, '3950x2000x1432mm', '2.0', 1, 1, 6, 2, 5, 3, '20"', 2, 1, 1, 0, 0, 1, 'Pantalla Multi-Táctil 9,7" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(8, 'Fiesta', 2010, '3986x2368x1430mm', '1.6', 4, 2, 6, 1, 2, 3, '21"', 2, 0, 0, 0, 1, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(14, 'Clase A', 2015, '3569x2650x1454mm', '1.4', 2, 1, 5, 2, 3, 5, '20"', 4, 0, 0, 1, 0, 1, 'Pantalla Multi-Táctil 8" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(15, 'L200', 2014, '3956x2364x1650mm', '1.2', 4, 2, 7, 3, 9, 3, '19"', 4, 0, 0, 0, 0, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(15, 'Outlander', 2013, '3000x2613x1500mm', '1.6', 4, 3, 5, 1, 13, 3, '18"', 6, 1, 0, 0, 1, 0, 'Stereo c/ entrada USB', 0)
+insert into autos values(23, 'Gol', 2015, '3652x2654x1230mm', '3.0', 2, 2, 6, 4, 5, 5, '20"', 6, 0, 1, 1, 0, 0, 'Pantalla Multi-Táctil 9,5" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(19, 'Sandero', 2016, '3569x2548x1235mm', '2.0', 4, 2, 8, 2, 8, 3, '20"', 2, 1, 1, 0, 0, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(3, 'M4', 2000, '3544x2564x1684mm', '3.0', 2, 2, 5, 2, 7, 5, '21"', 4, 0, 1, 1, 1, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(2, 'A3', 2019, '4201x2040x1460mm', '3.5', 3, 1, 6, 4, 7, 5, '17"', 2, 1, 0, 0, 0, 1, 'Stereo c/ entrada USB', 1)
+insert into autos values(7, 'Palio', 2008, '4000x2000x1400mm', '1.9', 2, 3, 5, 2, 7, 5, '18"', 2, 0, 1, 1, 0, 1, 'Stereo c/ entrada USB', 1)
+insert into autos values(21, 'Model Y', 2007, '3956x2364x1650mm', '1.6', 1, 3, 9, 3, 3, 3, '21"', 4, 1, 0, 0, 1, 0, 'Pantalla Multi-Táctil 7,9" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(16, 'Frontier', 2007, '3544x2564x1684mm', '1.4', 3, 1, 6, 4, 12, 5, '20"', 2, 1, 1, 0, 0, 1, 'Stereo c/ Conexión Bluetooth', 0)
+insert into autos values(20, 'Fun', 2009, '4000x2000x1400mm', '1.4', 3, 2, 5, 1, 4, 5, '21"', 4, 0, 0, 0, 0, 1, 'Pantalla Multi-Táctil 9" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(2, 'A1', 2012, '3950x2000x1432mm', '1.5', 2, 2, 6, 2, 10, 3, '18"', 2, 1, 1, 1, 1, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(7, 'Uno', 2011, '4201x2040x1460mm', '1.8', 2, 2, 5, 2, 11, 5, '17"', 6, 1, 0, 0, 0, 1, 'Stereo c/ entrada USB', 1)
+
+
+--Autopartes
+INSERT INTO autopartes VALUES ( 2, 'A4', 4, 'Focos ', 150)
+INSERT INTO autopartes VALUES ( 5, 'C4 Cactus', 4, 'Faros ', 300)
+INSERT INTO autopartes VALUES ( 6, 'F40', 4, 'Bobinas ', 420)
+INSERT INTO autopartes VALUES ( 4, 'Veyron', 4, 'Bujias ', 120)
+INSERT INTO autopartes VALUES ( 1, 'Mito Veloce', 4, 'Cables de bujias ', 360)
+INSERT INTO autopartes VALUES ( 2, 'A1', 4, 'Discos de freno ', 500)
+INSERT INTO autopartes VALUES ( 3, 'M4', 4, 'Pastillas', 510)
+INSERT INTO autopartes VALUES ( 6, 'F40', 4, 'Llanta del auto ', 200)
+INSERT INTO autopartes VALUES ( 7, 'Palio', 4, 'Amortiguadores ', 400)
+INSERT INTO autopartes VALUES ( 8, 'Fiesta', 4, 'Resortes ', 1500)
+INSERT INTO autopartes VALUES ( 9, 'City', 4, 'Bielas ', 500)
+INSERT INTO autopartes VALUES ( 8, 'Fiesta', 4, 'Válvulas ', 360)
+INSERT INTO autopartes VALUES ( 9, 'City', 4, 'Bomba de agua ', 200)
+INSERT INTO autopartes VALUES ( 9, 'Civic', 4, 'Bombas de aceite ', 200)
+
+
+--TIPO_PRODUCTOS
+INSERT INTO Tipos_Productos values('Automovil')
+INSERT INTO Tipos_Productos values('Autoparte')
+
+--Productos
+	--autos
+INSERT INTO productos VALUES( 1, 1, null, 300000)
+INSERT INTO productos VALUES( 1, 2, null, 250000)
+INSERT INTO productos VALUES( 1, 3, null, 420000)
+INSERT INTO productos VALUES( 1, 4, null, 115000)
+INSERT INTO productos VALUES( 1, 5, null, 120000)
+INSERT INTO productos VALUES( 1, 6, null, 500000)
+INSERT INTO productos VALUES( 1, 7, null, 400000)
+INSERT INTO productos VALUES( 1, 8, null, 600000)
+INSERT INTO productos VALUES( 1, 9, null, 700000)
+INSERT INTO productos VALUES( 1, 10, null, 650000)
+INSERT INTO productos VALUES( 1, 11, null, 860000)
+INSERT INTO productos VALUES( 1, 12, null, 604000)
+INSERT INTO productos VALUES( 1, 13, null, 100000)
+INSERT INTO productos VALUES( 1, 14, null, 900000)
+INSERT INTO productos VALUES( 1, 15, null, 657000)
+INSERT INTO productos VALUES( 1, 16, null, 330000)
+INSERT INTO productos VALUES( 1, 17, null, 750000)
+INSERT INTO productos VALUES( 1, 18, null, 820000)
+INSERT INTO productos VALUES( 1, 19, null, 502000)
+	--autopartes
+INSERT INTO productos VALUES(2, null, 1, 2500)
+INSERT INTO productos VALUES(2, null, 2, 5000)
+INSERT INTO productos VALUES(2, null, 3, 4000)
+INSERT INTO productos VALUES(2, null, 4, 5500)
+INSERT INTO productos VALUES(2, null, 5, 1500)
+INSERT INTO productos VALUES(2, null, 6, 2300)
+INSERT INTO productos VALUES(2, null, 7, 6500)
+INSERT INTO productos VALUES(2, null, 8, 700)
+INSERT INTO productos VALUES(2, null, 9, 2500)
+INSERT INTO productos VALUES(2, null, 10, 3800)
+INSERT INTO productos VALUES(2, null, 11, 1200)
+INSERT INTO productos VALUES(2, null, 12, 7500)
+INSERT INTO productos VALUES(2, null, 13, 3500)
+INSERT INTO productos VALUES(2, null, 14, 500)
+
+--Detalles Facturas
+INSERT INTO Detalle_Factura VALUES(1, 4, 2, 403000 )
+INSERT INTO Detalle_Factura VALUES(1, 6, 2, 100050 )
+INSERT INTO Detalle_Factura VALUES(1, 28, 2, 10050 )
+INSERT INTO Detalle_Factura VALUES(2, 6, 2, 145500 )
+INSERT INTO Detalle_Factura VALUES(3, 2, 5, 210000 )
+INSERT INTO Detalle_Factura VALUES(3, 23, 1, 6750 )
+INSERT INTO Detalle_Factura VALUES(3, 1, 10, 112000 )
+INSERT INTO Detalle_Factura VALUES(4, 3, 15, 320000 )
+INSERT INTO Detalle_Factura VALUES(4, 5, 25, 100000 )
+INSERT INTO Detalle_Factura VALUES(5, 6, 50, 500000 )
+INSERT INTO Detalle_Factura VALUES(5, 4, 10, 600000 )
+INSERT INTO Detalle_Factura VALUES(5, 33, 3, 3000 )
+INSERT INTO Detalle_Factura VALUES(5, 3, 22, 2000000 )
+INSERT INTO Detalle_Factura VALUES(6, 2, 6, 1100000 )
+INSERT INTO Detalle_Factura VALUES(6, 24, 22, 2000 )
+INSERT INTO Detalle_Factura VALUES(7, 2, 10, 3000000)
+INSERT INTO Detalle_Factura VALUES(7, 7, 1, 670000 )
+INSERT INTO Detalle_Factura VALUES(7, 30, 10, 110000 )
+INSERT INTO Detalle_Factura VALUES(8, 7, 9, 70000 )
+INSERT INTO Detalle_Factura VALUES(9, 9, 7, 800000)
+INSERT INTO Detalle_Factura VALUES(9, 11, 6, 800000)
+INSERT INTO Detalle_Factura VALUES(9, 7, 5, 100000)
+INSERT INTO Detalle_Factura VALUES(9, 5, 1, 200000)
+INSERT INTO Detalle_Factura VALUES(10, 20, 5, 180000 )
+INSERT INTO Detalle_Factura VALUES(10, 16, 1, 200000)
+
+go
+
+create view viewCargarAutos
+as
+select a.id_automovil, a.id_marca, a.Modelo, a.Año, a.Dimenciones, a.Motor,a.id_combustible,
+	a.id_cajaVelocidad, a.Velocidades, a.id_tipoDireccion, a.id_Color, a.Cantidad_puertas, a.Tamaño_llantas,
+	a.Cantidad_AirBags, a.Camara_de_Retroceso, a.Sensores_lluvia_parabrisas, a.Techo_cielo, a.Climatizador_biZona,
+	a.LevantaVidrio_automatico, a.Audio_Conectividad, a.Cierre_Centralizado, p.id_producto
+from Productos p right join Autos a on p.id_automovil = a.id_automovil
+
+go
+
+create view viewMostrarAutos
+as
+select a.id_automovil Codigo, m.Marca, a.Modelo, a.Año, a.Dimenciones, a.Motor,
+	c.Combustible, tcv.Tipo 'Caja Velocidad', a.Velocidades, td.Tipo 'Tipo de Direccion',
+	col.Color, a.Cantidad_puertas 'Cant. Puertas', a.Tamaño_llantas 'Tamaño Llantas',
+	a.Cantidad_AirBags 'Cant. AirBags', a.Camara_de_Retroceso 'Camara de Retroceso',
+	a.Sensores_lluvia_parabrisas 'Sensores de Lluvia', a.Techo_cielo 'Techo Cielo',
+	a.Climatizador_biZona 'Climatizador BiZona', a.LevantaVidrio_automatico 'Levanta Vidrio Autom.',
+	a.Cierre_Centralizado 'Cierre Centralizado', a.Audio_Conectividad 'Audio y Conectividad'
+from Autos a join marcas m on m.id_marca = a.id_marca
+	join Combustibles c on c.id_combustible = a.id_combustible
+	join Tipos_Cajas_Velocidad tcv on tcv.id_cajaVelocidad = a.id_cajaVelocidad
+	join Tipos_Direcciones td on td.id_tipoDireccion = a.id_tipoDireccion
+	join Colores col on col.id_Color = a.id_Color
+
+*****************************************************************************************************************************************************
+	Script para que ande en los Servidores SQL server 2005(puede variar) o anteriores
+*****************************************************************************************************************************************************
+
+create database ABM_Automoviles
+go 
+use ABM_Automoviles
+go
+
+--Creacion de Tablas
+create table Tipos_Clientes
+(
+	id_tipoCliente int identity(1,1),
+	Tipo varchar(50) not null,
+	constraint PK_TiposCientes primary key (id_tipoCliente)
+)
+
+create table Tipos_Documentos
+(
+	id_tipoDocumento int identity(1,1),
+	Tipo varchar(40) not null,
+	constraint PK_TiposDocumentos primary key (id_tipoDocumento)
+)
+
+create table Paises
+(
+	id_pais int identity(1,1),
+	Pais varchar(50) not null,
+	constraint PK_Paises primary key (id_pais)
+)
+
+create table Provincias
+(
+	id_provincia int identity(1,1),
+	Provincia varchar(50) not null,
+	id_pais int,
+	constraint PK_Provincias primary key (id_provincia),
+	constraint fk_Paises_Provincias foreign key (id_pais) references Paises(id_pais)
+)
+
+create table Localidades
+(
+	id_localidad int identity(1,1),
+	Localidad varchar(60) not null,
+	id_provincia int,
+	constraint PK_Localidades primary key (id_localidad),
+	constraint fk_Provincias_Localidades foreign key (id_provincia) references Provincias(id_provincia)
+)
+
+create table Barrios
+(
+	id_barrio int identity(1,1),
+	Barrio varchar(60) not null,
+	id_localidad int,
+	constraint PK_Barrios primary key (id_barrio),
+	constraint fk_Localidades_Barrios foreign key (id_localidad) references Localidades(id_localidad)
+)
+
+create table Tipos_Contactos
+(
+	id_tipoContacto int identity(1,1),
+	Tipo varchar(40) not null,
+	constraint PK_TiposContactos primary key (id_tipoContacto)
+)
+
+create table Clientes
+(
+	id_cliente int identity(1,1),
+	Nombre varchar(80)not null,
+	Apellido varchar(80),
+	id_tipoDocumento int,
+	nro_Documento bigint,
+	id_tipoCliente int,
+	Direccion varchar(110),
+	id_barrio int,
+	constraint PK_Clientes primary key (id_cliente),
+	constraint fk_TiposDocumetnos_Clientes foreign key (id_tipoDocumento) references Tipos_Documentos(id_tipoDocumento),
+	constraint fk_TiposClientes_Clientes foreign key (id_tipoCliente) references Tipos_Clientes(id_TipoCliente),
+	constraint fk_Barrios_Clientes foreign key (id_barrio) references Barrios(id_barrio)
+)
+
+create table Contactos_Clientes
+(
+	id_contactoCliente int identity(1,1),
+	id_cliente int,
+	id_tipoContacto int,
+	Contacto varchar(100) not null,
+	constraint PK_ContactosClientes primary key (id_contactoCliente),
+	constraint fk_Clientes_ContactosClientes foreign key (id_cliente) references Clientes(id_cliente),
+	constraint fk_TiposDeContactos_ContactosClientes foreign key (id_tipoContacto) references Tipos_Contactos(id_tipoContacto)
+)
+
+create table Vendedores
+(
+	id_vendedor int identity(1,1),
+	Nombre varchar(80)not null,
+	Apellido varchar(80) not null,
+	id_tipoDocumento int,
+	nro_Documento bigint,
+	Direccion varchar(110),
+	id_barrio int,
+	constraint PK_Vendedores primary key (id_vendedor),
+	constraint fk_TiposDocumentos_Clientes foreign key (id_tipoDocumento) references Tipos_Documentos(id_tipoDocumento),
+	constraint fk_Barrios_Vendedores foreign key (id_barrio) references Barrios(id_barrio)
+)
+
+create table Contactos_Vendedores
+(
+	id_contactoVendedor int identity(1,1),
+	id_vendedor int,
+	id_tipoContacto int,
+	Contacto varchar(100) not null,
+	constraint PK_ContactosVendedores primary key (id_contactoVendedor),
+	constraint fk_Vendedores_ContactosVendedores foreign key (id_vendedor) references Vendedores(id_vendedor),
+	constraint fk_TiposDeContactos_ContactosVendedores foreign key (id_tipoContacto) references Tipos_Contactos(id_tipoContacto)
+)
+
+create table Facturas
+(
+	id_factura int identity(1,1),
+	Fecha datetime not null,
+	id_cliente int,
+	id_vendedor int,
+	constraint PK_Facturas primary key (id_factura),
+	constraint fk_Vendedores_Facturas foreign key (id_vendedor) references Vendedores(id_vendedor),
+	constraint fk_Cliente_Facturas foreign key (id_cliente) references Clientes(id_cliente),
+)
+
+create table Medios_De_Pago
+(
+	id_medio_de_pago int identity(1,1),
+	Medio varchar(80) not null,
+	constraint PK_MediosDePago primary key (id_medio_de_pago)
+)
+
+create table MediosDePago_Facturas
+(
+	id_pago int identity(1,1),
+	id_factura int,
+	id_medio_de_pago int,
+	Monto money not null,
+	constraint PK_MP_Facutras primary key (id_pago),
+	constraint fk_MediosDePago_MedPagoFacturas foreign key (id_medio_de_pago) references Medios_De_Pago(id_medio_de_pago),
+	constraint fk_Facturas_MedPagoFacturas foreign key (id_factura) references Facturas(id_factura)
+)
+
+create table Marcas
+(
+	id_marca int identity(1,1),
+	Marca varchar(30) not null,
+	constraint PK_Marcas primary key (id_marca)
+)
+
+create table Colores
+(
+	id_Color int identity(1,1),
+	Color varchar(50) not null,
+	Cod_color_Hexa varchar(8),
+	constraint PK_Colores primary key (id_color)
+)
+
+create table Tipos_Cajas_Velocidad
+(
+	id_cajaVelocidad int identity(1,1),
+	Tipo varchar(20) not null,
+	constraint PK_TiposCajasVelocidad primary key (id_cajaVelocidad)
+)
+
+create table Tipos_Direcciones
+(
+	id_tipoDireccion int identity(1,1),
+	Tipo varchar(40) not null,
+	constraint PK_TiposDirecciones primary key(id_TipoDireccion)
+)
+
+create table Combustibles
+(
+	id_combustible int identity(1,1),
+	Combustible varchar(20) not null,
+	constraint PK_Combustibles primary key(id_combustible)
+)
+
+create table Autos
+(
+	id_automovil int identity(1,1),
+	id_marca int,
+	Modelo varchar(30) not null,
+	Año int,
+	Dimenciones varchar(30),
+	Motor varchar(20),
+	id_combustible int,
+	id_cajaVelocidad int,
+	Velocidades tinyint,
+	id_tipoDireccion int,
+	id_Color int,
+	Cantidad_puertas tinyint,
+	Tamaño_llantas char(5),
+	Cantidad_AirBags tinyint,
+	Camara_de_Retroceso bit,
+	Sensores_lluvia_parabrisas bit,
+	Techo_cielo bit,
+	Climatizador_biZona bit,
+	LevantaVidrio_automatico bit,
+	Audio_Conectividad varchar(100),
+	Cierre_Centralizado bit,
+	constraint PK_Autos primary key (id_automovil),
+	constraint fk_Marcas_Autos foreign key (id_marca) references Marcas(id_marca),
+	constraint fk_Combustibles_Autos foreign key (id_combustible) references Combustibles(id_combustible),
+	constraint fk_TiposCajasVelocidad_Autos foreign key (id_cajaVelocidad) references Tipos_Cajas_Velocidad(id_cajaVelocidad),
+	constraint fk_TiposDirecciones_Autos foreign key (id_TipoDireccion) references Tipos_Direcciones(id_tipoDireccion),
+	constraint fk_Colores_Autos foreign key (id_Color) references Colores(id_Color)
+)
+
+create table Autopartes
+(
+	id_autoparte int identity(1,1),
+	id_marca int,
+	Modelo varchar(60) not null,
+	id_pais_Origen int,
+	descripcion varchar(90),
+	Stock int,
+	constraint PK_Autopartes primary key (id_autoparte),
+	constraint fk_Marcas_Autopartes foreign key (id_marca) references Marcas(id_marca),
+	constraint fk_Paises_Autopartes foreign key (id_pais_Origen) references Paises(id_pais)
+)
+
+create table Tipos_Productos
+(
+	id_tipoProducto int identity(1,1),
+	Tipo varchar(30),
+	constraint PK_TiposProductos primary key (id_tipoProducto)
+)
+
+
+create table Productos
+(
+	id_producto int identity (1,1),
+	id_tipoProducto int,
+	id_automovil int,
+	id_autoparte int,
+	Precio money,
+	constraint PK_id_producto primary key (id_producto),
+	constraint fk_Autos_Productos foreign key (id_automovil) references Autos(id_automovil),
+	constraint fk_Autopartes_Productos foreign key (id_autoparte) references Autopartes(id_autoparte),
+	constraint fk_TiposProductos_Productos foreign key (id_tipoProducto) references Tipos_Productos(id_tipoProducto),
+)
+
+create table Detalle_Factura
+(
+	id_detalle_factura int identity(1,1),
+	id_factura int,
+	id_producto int,
+	Cantidad int,
+	Precio money,
+	constraint PK_DetalleFactura primary key (id_detalle_factura),
+	constraint fk_Facturas_DetalleFactura foreign key (id_factura) references Facturas(id_factura),
+	constraint fk_Productos_DetalleFactura foreign key (id_producto) references Productos(id_producto)
+)
+
+create table Ordenes_de_Pedidos
+(
+	id_orden_pedido int identity(1,1),
+	id_factura int,
+	fecha_entrega datetime,
+	forma_de_entrega varchar(100),
+	constraint PK_OrdenPedido primary key (id_orden_pedido),
+	constraint fk_Facturas_OrdenesDePedidos foreign key (id_factura) references Facturas(id_factura)
+)
+
+create table Detalle_Pedido
+(
+	id_detalle_pedido int identity(1,1),
+	id_orden_pedido int,
+	id_producto int,
+	Cantidad int,
+	Descripcion varchar(60),
+	constraint PK_id_detalle_pedido primary key (id_detalle_pedido),
+	constraint fk_OrdenPedido_DetallePedido foreign key (id_orden_pedido) references Ordenes_de_Pedidos(id_orden_pedido),
+	constraint fk_Productos_DetallePedido foreign key (id_producto) references Productos(id_producto)
+)
+
+create table Historial
+(
+	id_historial int identity(1,1),
+	id_producto int,
+	Fecha datetime,
+	constraint PK_Historial primary key (id_historial),
+	constraint fk_Productos_Historial foreign key (id_producto) references Productos(id_producto)
+)
+
+Go
+
+--Inserts
+
+--Paises
+insert into Paises values('Argentina')
+insert into Paises values('Brasil')
+insert into Paises values('Perú')
+insert into Paises values('Chile')
+insert into Paises values('Estados Unidos')
+insert into Paises values('China')
+insert into Paises values('España')
+insert into Paises values('Finlandia')
+insert into Paises values('Francia')
+insert into Paises values('Paraguay')
+insert into Paises values('Uruguay')
+insert into Paises values('Colombia')
+insert into Paises values('Mexico')
+
+--Provincias
+insert into Provincias values('Córdoba', 1)
+insert into Provincias values('Buenos Aires', 1)
+insert into Provincias values('San Luis', 1)
+insert into Provincias values('Jujuy', 1)
+insert into Provincias values('Catamarca', 1)
+insert into Provincias values('Santiago del Estero', 1)
+insert into Provincias values('Tierra del Fuego', 1)
+insert into Provincias values('Neuquén', 1)
+insert into Provincias values('Chaco', 1)
+insert into Provincias values('Chubut', 1)
+insert into Provincias values('Corrientes', 1)
+insert into Provincias values('Entre Ríos', 1)
+insert into Provincias values('La Pampa', 1)
+insert into Provincias values('La Rioja', 1)
+insert into Provincias values('Formosa', 1)
+insert into Provincias values('Mendoza', 1)
+insert into Provincias values('Misiones', 1)
+insert into Provincias values('Río Negro', 1)
+insert into Provincias values('San Juan', 1)
+insert into Provincias values('Santa Cruz', 1)
+insert into Provincias values('Santa Fe', 1)
+insert into Provincias values('Tucuman', 1)
+insert into Provincias values('Salta', 1)
+
+--Localidades
+insert into Localidades values('Córdoba', 1)
+insert into Localidades values('El Chingolo', 1)
+insert into Localidades values('Unquillo', 1)
+insert into Localidades values('Villa Allende', 1)
+insert into Localidades values('Saldan', 1)
+INSERT INTO Localidades VALUES('Agua pintada', 1) 
+INSERT INTO Localidades VALUES('Alta Gracia', 1) 
+INSERT INTO Localidades VALUES('Bajo Grande', 1) 
+INSERT INTO Localidades VALUES('Capilla De Siton', 1) 
+INSERT INTO Localidades VALUES('Agua De Oro', 1) 
+
+--Barrios
+insert into Barrios values ('San Pedro', 1)
+INSERT INTO Barrios VALUES ('Centro', 1) 
+INSERT INTO Barrios VALUES ('Alto Alberdi', 1) 
+INSERT INTO Barrios VALUES ('Observatorio', 1) 
+INSERT INTO Barrios VALUES ('Jardin', 1) 
+INSERT INTO Barrios VALUES ('General Paz', 1) 
+INSERT INTO Barrios VALUES ('Pueyrredon', 1) 
+INSERT INTO Barrios VALUES ('Parque Horizonte II', 7) 
+INSERT INTO Barrios VALUES ('San Martín', 1) 
+INSERT INTO Barrios VALUES ('San Vicente', 1) 
+INSERT INTO Barrios VALUES ('Junior', 8) 
+INSERT INTO Barrios VALUES ('Maipú', 1) 
+INSERT INTO Barrios VALUES ('Panamericano', 1) 
+INSERT INTO Barrios VALUES ('Pand de Azucar',4)
+
+--Tipos de Documentos
+insert into Tipos_Documentos values('DNI')
+insert into Tipos_Documentos values('Pasaporte')
+insert into Tipos_Documentos values('Cédula de Ciudadania')
+insert into Tipos_Documentos values('CUIT/CUIL')
+
+--Tipos de Clientes
+insert into Tipos_Clientes values('Consumidor Final')
+insert into Tipos_Clientes values('Empresa')
+insert into Tipos_Clientes values('Concesionario')
+insert into Tipos_Clientes values('Vendedora de Autopartes')
+
+--Tipos de Contactos
+insert into Tipos_Contactos values ('Telefono')
+insert into Tipos_Contactos values ('Email')
+insert into Tipos_Contactos values ('Instragram')
+insert into Tipos_Contactos values ('Facebook')
+
+--Clientes Cons. finales												
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Perez', 'Rodolfo','San Martin 120', 1, 1, 1, 29654897)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Castillo', 'Marta Analia','Pedro Lozano 1450', 7, 1, 1, 33698754)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Abarca', 'Hector','Luis Gongora 160', 12, 1, 1, 40201314)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Morales','Santiago','Leon y Pizarro 55', 2, 1, 2, 155471516)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Perez', 'Carlos Antonio','A. Garzon 455', 3, 1, 1, 4054466)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Morales', 'Osvaldo','Los Alamos 99', 2, 1, 1, 15549416)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Paez', 'Roque','Humberto Primo 79', 11, 1, 2, 4262630)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Luque', 'Elvira Josefa','Mariano Usandivaras 360', 3, 1, 1, 14502829)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Ruiz', 'Marcos','Rivera Indarte 780', 1, 1, 1, 33954251)
+insert into clientes (Apellido, Nombre, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Moriel', 'Roberto','Santa Rosa 73', 9, 1, 1, 41856842)
+--Cli. Empresas
+insert into Clientes (Nombre, Apellido, id_tipoDocumento, nro_Documento, id_tipoCliente, Direccion, id_barrio) values ('Centro Diesel', '', 4, 321657820, 2, 'Juan B. Justo 4047', 5)
+insert into Clientes (Nombre, Apellido,id_tipoDocumento, nro_Documento, id_tipoCliente, Direccion, id_barrio) values ('Fes Electro Mecánica', '', 4, 122546820, 2, ' Alto Ameghino', 4)
+insert into Clientes (Nombre, Apellido,id_tipoDocumento, nro_Documento, id_tipoCliente, Direccion, id_barrio) values ('Bertolotto Car Center', '', 4, 12287657820,2,'Monseñor Pablo Cabrera 3945', 1)
+insert into Clientes (Nombre, Apellido,id_tipoDocumento, nro_Documento, id_tipoCliente, Direccion, id_barrio) values ('Galia Service', '', 4, 945457820,2, 'Dirección: Sabattini 3995', 2)
+--Cli. Concesionario
+insert into Clientes (Nombre, Apellido, id_tipoDocumento,nro_Documento,id_tipoCliente,Direccion,id_barrio) values ('Toyota', '', 4, 20446543200,3, 'Av. del Libertador 6777', 2)
+insert into Clientes (Nombre, Apellido, id_tipoDocumento,nro_Documento,id_tipoCliente,Direccion,id_barrio) values ('Ford', '', 4, 12408076859,3, 'Juan Antonio Lavalleja 799', 3)
+insert into Clientes (Nombre, Apellido, id_tipoDocumento,nro_Documento,id_tipoCliente,Direccion,id_barrio) values ('Chevrolet', '', 4, 19329866785, 3, 'Av. fuerza aérea 3712', 1)
+insert into Clientes (Nombre, Apellido, id_tipoDocumento,nro_Documento,id_tipoCliente,Direccion,id_barrio) values ('NISSAN', '', 4, 12287657820, 3, 'Av. Santa Ana 6363', 6)
+--Cli vend. autopartes
+insert into clientes (Nombre, Apellido, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Todo Fiat', '', 'Av. Colón 1655', 2, 4, 4, 306588454)
+insert into clientes (Nombre, Apellido, Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Corven', '', 'San Jeronimo 763', 7, 4, 4, 296584582)
+insert into clientes (Nombre, Apellido,Direccion, id_barrio, id_tipoCliente, id_tipoDocumento, nro_Documento) values ('Todo Fiat', '', 'Av. Colón 1655', 2, 4, 4, 306588454)
+
+--Contactos Clientes
+insert into Contactos_Clientes values(1,1,'351 7918702')
+insert into Contactos_Clientes values(2,2,'madrededios@wl.mart')
+insert into Contactos_Clientes values(3,3,'Alberto Juanes')
+
+--Vendedores
+INSERT INTO vendedores VALUES ('Rodrigo', 'Benitez', 1, 35620340, 'Media Luna 897' ,2)
+INSERT INTO vendedores VALUES ('Marcelo', 'Rodriguez',1,37450639, 'Lago Perdido 1000' ,3)
+INSERT INTO vendedores VALUES ('Pedro', 'Gonzales', 1, 39240566, 'La macarena 357' ,4)
+INSERT INTO vendedores VALUES ('Roman', 'Ramirez', 1, 24530125, 'Malaga 758' ,2)
+INSERT INTO vendedores VALUES ('Nestor', 'Fernandez', 1, 25053013, 'Alicante 111' ,1)
+INSERT INTO vendedores VALUES ('Victor', 'Valdez', 1, 27854931, 'Venecia 231' ,8)
+INSERT INTO vendedores VALUES ('Miguel', 'Antipan', 1, 29358120, 'San Sebastian 555' ,6)
+INSERT INTO vendedores VALUES ('Lucas', 'Bustos', 1, 22367812, 'Torino 330' ,5)
+INSERT INTO vendedores VALUES ('Fabrizio', 'Peralta', 1, 39954321, 'Recoletos 324' ,13)
+
+--Contactos Vendedores
+insert into Contactos_Vendedores values(1,1,'351 992154')
+insert into Contactos_Vendedores values(2,2,'olmedios@utn.edu.ar')
+insert into Contactos_Vendedores values(3,3,'Vendo Pastafrolas')
+
+--FACTURAS
+insert into Facturas values('13/02/18 20:00', 1, 1)
+insert into Facturas values('24/06/19 09:00', 6, 2)
+insert into Facturas values('27/05/14 16:00', 3, 3)
+insert into Facturas values('09/12/17 10:00', 8, 4)
+insert into Facturas values('08/08/16 7:00', 4, 5)
+insert into Facturas values('03/07/09 20:00', 5, 6)
+insert into Facturas values('07/04/18 20:00', 12, 7)	
+insert into Facturas values('09/10/13 20:00', 10, 8)
+insert into Facturas values('02/11/06 20:00', 9, 9)
+insert into Facturas values('05/01/15 20:00', 1, 9)
+
+--Medios de Pago
+insert into Medios_De_Pago values('Efectivo')
+insert into Medios_De_Pago values('Autoplan')
+insert into Medios_De_Pago values('Tarjeta de Débito')
+insert into Medios_De_Pago values('Tarjeta de Credito')
+
+--MedioPago_Facturas 
+insert into MediosDePago_Facturas values(1, 4, 5000)
+insert into MediosDePago_Facturas values(1, 1, 5000)
+insert into MediosDePago_Facturas values(2, 4, 1234)
+insert into MediosDePago_Facturas values(3, 4, 999)
+insert into MediosDePago_Facturas values(4, 4, 1598)
+insert into MediosDePago_Facturas values(5, 4, 5465)
+insert into MediosDePago_Facturas values(6, 4, 3478)
+insert into MediosDePago_Facturas values(7, 4, 95200)
+insert into MediosDePago_Facturas values(8, 4, 48500)
+insert into MediosDePago_Facturas values(9, 4, 8770)
+insert into MediosDePago_Facturas values(10, 4, 50560)
+insert into MediosDePago_Facturas values(10, 4, 1500)
+
+--MARCAS
+INSERT INTO Marcas VALUES ('Alfa Romeo')
+INSERT INTO Marcas VALUES ('Audi')
+INSERT INTO Marcas VALUES ('BMW')
+INSERT INTO Marcas VALUES ('Bugatti')
+INSERT INTO Marcas VALUES ('Citroen')
+INSERT INTO Marcas VALUES ('Ferrari')
+INSERT INTO Marcas VALUES ('Fiat')
+INSERT INTO Marcas VALUES ('Ford')
+INSERT INTO Marcas VALUES ('Honda')
+INSERT INTO Marcas VALUES ('Hyundai')
+INSERT INTO Marcas VALUES ('Jeep')
+INSERT INTO Marcas VALUES ('Lamborghini')
+INSERT INTO Marcas VALUES ('Mazda')
+INSERT INTO Marcas VALUES ('Mercedes-Benz')
+INSERT INTO Marcas VALUES ('Mitsubishi') 
+INSERT INTO Marcas VALUES ('Nissan') 
+INSERT INTO Marcas VALUES ('Peugeot')
+INSERT INTO Marcas VALUES ('Porsche')
+INSERT INTO Marcas VALUES ('Renault')
+INSERT INTO Marcas VALUES ('Suzuki')
+INSERT INTO Marcas VALUES ('Tesla')
+INSERT INTO Marcas VALUES ('Toyota')
+INSERT INTO Marcas VALUES ('Volkswagen') 
+
+--COMBUSTIBLES
+INSERT INTO Combustibles values ('GNC')
+INSERT INTO Combustibles values ('Nafta')
+INSERT INTO Combustibles values ('Diesel')
+INSERT INTO Combustibles values ('Eléctrico')
+
+--COLORES
+INSERT INTO Colores Values( 'Amarillo', '#D4D424' )
+INSERT INTO Colores Values( 'Azul', '#112DE5')
+INSERT INTO Colores Values( 'Azul marino', '#0D1864')
+INSERT INTO Colores Values( 'Azul francia', '#384388')
+INSERT INTO Colores Values( 'Blanco', '#FFFFFF')
+INSERT INTO Colores Values( 'Celeste', '#21DCDD')
+INSERT INTO Colores Values( 'Esmeralda', '#06ECAC')
+INSERT INTO Colores Values( 'Gris', '#606161')
+INSERT INTO Colores Values( 'Marrón', '#360303')
+INSERT INTO Colores Values( 'Morado', '#4C0F51')
+INSERT INTO Colores Values( 'Naranja', '#E7820A')
+INSERT INTO Colores Values( 'Negro', '#000000')
+INSERT INTO Colores Values( 'Verde militar', '#204F1B') 
+
+--TIPOS_CAJA_VELOCIDAD
+INSERT INTO Tipos_Cajas_Velocidad VALUES('Manual')
+INSERT INTO Tipos_Cajas_Velocidad VALUES('Automática')
+INSERT INTO Tipos_Cajas_Velocidad VALUES('Variación continua')
+
+--TIPOS_DIRECCIONES
+INSERT INTO Tipos_Direcciones VALUES('Mecánica')
+INSERT INTO Tipos_Direcciones VALUES('Hidráulica')
+INSERT INTO Tipos_Direcciones VALUES('Eléctrica')
+INSERT INTO Tipos_Direcciones VALUES('Electrohidráulica')
+
+						             
+--Autos					
+insert into autos values(5, 'C4 Cactus', 2018, '4201x2040x1460mm', '1.8', 2, 1, 6, 2, 5, 3, '20"', 2, 1, 1, 0, 0, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(17, '308 S', 2018, '4253x2043x1458mm', '2.0', 2, 2, 6, 3, 12, 5, '17"', 6, 1, 1, 1, 1, 1, 'Pantalla Multi-Táctil 9,7" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(17, '208 Allure', 2019, '3900x2039x1450mm', '1.6', 2, 1, 5, 4, 9, 3, '18"', 2, 0, 1, 0, 0, 1, 'Pantalla Multi-Táctil 8" c/ entrada USB', 1)
+insert into autos values(9, 'City', 2017, '4000x2000x1400mm', '2.0', 3, 2, 6, 3, 12, 5, '20"', 2, 0, 0, 0, 1, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(1, 'Mito Veloce', 2016, '3950x2000x1432mm', '2.0', 1, 1, 6, 2, 5, 3, '20"', 2, 1, 1, 0, 0, 1, 'Pantalla Multi-Táctil 9,7" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(8, 'Fiesta', 2010, '3986x2368x1430mm', '1.6', 4, 2, 6, 1, 2, 3, '21"', 2, 0, 0, 0, 1, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(14, 'Clase A', 2015, '3569x2650x1454mm', '1.4', 2, 1, 5, 2, 3, 5, '20"', 4, 0, 0, 1, 0, 1, 'Pantalla Multi-Táctil 8" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(15, 'L200', 2014, '3956x2364x1650mm', '1.2', 4, 2, 7, 3, 9, 3, '19"', 4, 0, 0, 0, 0, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(15, 'Outlander', 2013, '3000x2613x1500mm', '1.6', 4, 3, 5, 1, 13, 3, '18"', 6, 1, 0, 0, 1, 0, 'Stereo c/ entrada USB', 0)
+insert into autos values(23, 'Gol', 2015, '3652x2654x1230mm', '3.0', 2, 2, 6, 4, 5, 5, '20"', 6, 0, 1, 1, 0, 0, 'Pantalla Multi-Táctil 9,5" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(19, 'Sandero', 2016, '3569x2548x1235mm', '2.0', 4, 2, 8, 2, 8, 3, '20"', 2, 1, 1, 0, 0, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(3, 'M4', 2000, '3544x2564x1684mm', '3.0', 2, 2, 5, 2, 7, 5, '21"', 4, 0, 1, 1, 1, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(2, 'A3', 2019, '4201x2040x1460mm', '3.5', 3, 1, 6, 4, 7, 5, '17"', 2, 1, 0, 0, 0, 1, 'Stereo c/ entrada USB', 1)
+insert into autos values(7, 'Palio', 2008, '4000x2000x1400mm', '1.9', 2, 3, 5, 2, 7, 5, '18"', 2, 0, 1, 1, 0, 1, 'Stereo c/ entrada USB', 1)
+insert into autos values(21, 'Model Y', 2007, '3956x2364x1650mm', '1.6', 1, 3, 9, 3, 3, 3, '21"', 4, 1, 0, 0, 1, 0, 'Pantalla Multi-Táctil 7,9" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(16, 'Frontier', 2007, '3544x2564x1684mm', '1.4', 3, 1, 6, 4, 12, 5, '20"', 2, 1, 1, 0, 0, 1, 'Stereo c/ Conexión Bluetooth', 0)
+insert into autos values(20, 'Fun', 2009, '4000x2000x1400mm', '1.4', 3, 2, 5, 1, 4, 5, '21"', 4, 0, 0, 0, 0, 1, 'Pantalla Multi-Táctil 9" c/ entrada USB y Conexión Bluetooth', 1)
+insert into autos values(2, 'A1', 2012, '3950x2000x1432mm', '1.5', 2, 2, 6, 2, 10, 3, '18"', 2, 1, 1, 1, 1, 1, 'Stereo c/ Conexión Bluetooth', 1)
+insert into autos values(7, 'Uno', 2011, '4201x2040x1460mm', '1.8', 2, 2, 5, 2, 11, 5, '17"', 6, 1, 0, 0, 0, 1, 'Stereo c/ entrada USB', 1)
+
+
+--Autopartes
+INSERT INTO autopartes VALUES ( 2, 'A4', 4, 'Focos ', 150)
+INSERT INTO autopartes VALUES ( 5, 'C4 Cactus', 4, 'Faros ', 300)
+INSERT INTO autopartes VALUES ( 6, 'F40', 4, 'Bobinas ', 420)
+INSERT INTO autopartes VALUES ( 4, 'Veyron', 4, 'Bujias ', 120)
+INSERT INTO autopartes VALUES ( 1, 'Mito Veloce', 4, 'Cables de bujias ', 360)
+INSERT INTO autopartes VALUES ( 2, 'A1', 4, 'Discos de freno ', 500)
+INSERT INTO autopartes VALUES ( 3, 'M4', 4, 'Pastillas', 510)
+INSERT INTO autopartes VALUES ( 6, 'F40', 4, 'Llanta del auto ', 200)
+INSERT INTO autopartes VALUES ( 7, 'Palio', 4, 'Amortiguadores ', 400)
+INSERT INTO autopartes VALUES ( 8, 'Fiesta', 4, 'Resortes ', 1500)
+INSERT INTO autopartes VALUES ( 9, 'City', 4, 'Bielas ', 500)
+INSERT INTO autopartes VALUES ( 8, 'Fiesta', 4, 'Válvulas ', 360)
+INSERT INTO autopartes VALUES ( 9, 'City', 4, 'Bomba de agua ', 200)
+INSERT INTO autopartes VALUES ( 9, 'Civic', 4, 'Bombas de aceite ', 200)
+
+
+--TIPO_PRODUCTOS
+INSERT INTO Tipos_Productos values('Automovil')
+INSERT INTO Tipos_Productos values('Autoparte')
+
+--Productos
+	--autos
+INSERT INTO productos VALUES( 1, 1, null, 300000)
+INSERT INTO productos VALUES( 1, 2, null, 250000)
+INSERT INTO productos VALUES( 1, 3, null, 420000)
+INSERT INTO productos VALUES( 1, 4, null, 115000)
+INSERT INTO productos VALUES( 1, 5, null, 120000)
+INSERT INTO productos VALUES( 1, 6, null, 500000)
+INSERT INTO productos VALUES( 1, 7, null, 400000)
+INSERT INTO productos VALUES( 1, 8, null, 600000)
+INSERT INTO productos VALUES( 1, 9, null, 700000)
+INSERT INTO productos VALUES( 1, 10, null, 650000)
+INSERT INTO productos VALUES( 1, 11, null, 860000)
+INSERT INTO productos VALUES( 1, 12, null, 604000)
+INSERT INTO productos VALUES( 1, 13, null, 100000)
+INSERT INTO productos VALUES( 1, 14, null, 900000)
+INSERT INTO productos VALUES( 1, 15, null, 657000)
+INSERT INTO productos VALUES( 1, 16, null, 330000)
+INSERT INTO productos VALUES( 1, 17, null, 750000)
+INSERT INTO productos VALUES( 1, 18, null, 820000)
+INSERT INTO productos VALUES( 1, 19, null, 502000)
+	--autopartes
+INSERT INTO productos VALUES(2, null, 1, 2500)
+INSERT INTO productos VALUES(2, null, 2, 5000)
+INSERT INTO productos VALUES(2, null, 3, 4000)
+INSERT INTO productos VALUES(2, null, 4, 5500)
+INSERT INTO productos VALUES(2, null, 5, 1500)
+INSERT INTO productos VALUES(2, null, 6, 2300)
+INSERT INTO productos VALUES(2, null, 7, 6500)
+INSERT INTO productos VALUES(2, null, 8, 700)
+INSERT INTO productos VALUES(2, null, 9, 2500)
+INSERT INTO productos VALUES(2, null, 10, 3800)
+INSERT INTO productos VALUES(2, null, 11, 1200)
+INSERT INTO productos VALUES(2, null, 12, 7500)
+INSERT INTO productos VALUES(2, null, 13, 3500)
+INSERT INTO productos VALUES(2, null, 14, 500)
+
+--Detalles Facturas
+INSERT INTO Detalle_Factura VALUES(1, 4, 2, 403000 )
+INSERT INTO Detalle_Factura VALUES(1, 6, 2, 100050 )
+INSERT INTO Detalle_Factura VALUES(1, 28, 2, 10050 )
+INSERT INTO Detalle_Factura VALUES(2, 6, 2, 145500 )
+INSERT INTO Detalle_Factura VALUES(3, 2, 5, 210000 )
+INSERT INTO Detalle_Factura VALUES(3, 23, 1, 6750 )
+INSERT INTO Detalle_Factura VALUES(3, 1, 10, 112000 )
+INSERT INTO Detalle_Factura VALUES(4, 3, 15, 320000 )
+INSERT INTO Detalle_Factura VALUES(4, 5, 25, 100000 )
+INSERT INTO Detalle_Factura VALUES(5, 6, 50, 500000 )
+INSERT INTO Detalle_Factura VALUES(5, 4, 10, 600000 )
+INSERT INTO Detalle_Factura VALUES(5, 33, 3, 3000 )
+INSERT INTO Detalle_Factura VALUES(5, 3, 22, 2000000 )
+INSERT INTO Detalle_Factura VALUES(6, 2, 6, 1100000 )
+INSERT INTO Detalle_Factura VALUES(6, 24, 22, 2000 )
+INSERT INTO Detalle_Factura VALUES(7, 2, 10, 3000000)
+INSERT INTO Detalle_Factura VALUES(7, 7, 1, 670000 )
+INSERT INTO Detalle_Factura VALUES(7, 30, 10, 110000 )
+INSERT INTO Detalle_Factura VALUES(8, 7, 9, 70000 )
+INSERT INTO Detalle_Factura VALUES(9, 9, 7, 800000)
+INSERT INTO Detalle_Factura VALUES(9, 11, 6, 800000)
+INSERT INTO Detalle_Factura VALUES(9, 7, 5, 100000)
+INSERT INTO Detalle_Factura VALUES(9, 5, 1, 200000)
+INSERT INTO Detalle_Factura VALUES(10, 20, 5, 180000 )
+INSERT INTO Detalle_Factura VALUES(10, 16, 1, 200000)
+
+create view viewCargarAutos
+as
+select a.id_automovil, a.id_marca, a.Modelo, a.Año, a.Dimenciones, a.Motor,a.id_combustible,
+	a.id_cajaVelocidad, a.Velocidades, a.id_tipoDireccion, a.id_Color, a.Cantidad_puertas, a.Tamaño_llantas,
+	a.Cantidad_AirBags, a.Camara_de_Retroceso, a.Sensores_lluvia_parabrisas, a.Techo_cielo, a.Climatizador_biZona,
+	a.LevantaVidrio_automatico, a.Audio_Conectividad, a.Cierre_Centralizado, p.id_producto
+from Productos p right join Autos a on p.id_automovil = a.id_automovil
+
+go
+
+create view viewMostrarAutos
+as
+select a.id_automovil Codigo, m.Marca, a.Modelo, a.Año, a.Dimenciones, a.Motor,
+	c.Combustible, tcv.Tipo 'Caja Velocidad', a.Velocidades, td.Tipo 'Tipo de Direccion',
+	col.Color, a.Cantidad_puertas 'Cant. Puertas', a.Tamaño_llantas 'Tamaño Llantas',
+	a.Cantidad_AirBags 'Cant. AirBags', a.Camara_de_Retroceso 'Camara de Retroceso',
+	a.Sensores_lluvia_parabrisas 'Sensores de Lluvia', a.Techo_cielo 'Techo Cielo',
+	a.Climatizador_biZona 'Climatizador BiZona', a.LevantaVidrio_automatico 'Levanta Vidrio Autom.',
+	a.Cierre_Centralizado 'Cierre Centralizado', a.Audio_Conectividad 'Audio y Conectividad'
+from Autos a join marcas m on m.id_marca = a.id_marca
+	join Combustibles c on c.id_combustible = a.id_combustible
+	join Tipos_Cajas_Velocidad tcv on tcv.id_cajaVelocidad = a.id_cajaVelocidad
+	join Tipos_Direcciones td on td.id_tipoDireccion = a.id_tipoDireccion
+	join Colores col on col.id_Color = a.id_Color
+
+
