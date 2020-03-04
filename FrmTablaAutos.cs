@@ -17,16 +17,14 @@ namespace WFAppTPi_ProgramacionII
         public FrmTablaAutos()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
         }
 
         private void FrmTablaAutos_Load(object sender, EventArgs e)
         {
             WindowState = FormWindowState.Maximized;
 
-            txtCodigo.Enabled = false;
-            txtMarca.Enabled = false;
-            txtColor.Enabled = false;
-            txtAño.Enabled = false;
+            txtCodigo.Enabled = txtMarca.Enabled = txtColor.Enabled = txtAño.Enabled = false;
 
             SQL_Query = "SELECT * FROM viewMostrarAutos";
 
@@ -101,7 +99,7 @@ namespace WFAppTPi_ProgramacionII
             }
             else
             {
-                MessageBox.Show("No se a seleccionado un ningún filtro de busqueda", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("No se ha seleccionado un ningún filtro de busqueda", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }     
         
@@ -113,18 +111,12 @@ namespace WFAppTPi_ProgramacionII
             if (checkBoxCodigo.Checked)
             {
                 txtCodigo.Enabled = true;
-                checkBoxMarca.Enabled = false;
-                checkBoxColor.Enabled = false;
-                checkBoxAño.Enabled = false;
-                checkBoxTodo.Enabled = false;
+                checkBoxTodo.Enabled = checkBoxMarca.Enabled = checkBoxColor.Enabled = checkBoxAño.Enabled = false;
                 txtCodigo.Focus();
             }
             else
             {
-                checkBoxMarca.Enabled = true;
-                checkBoxColor.Enabled = true;
-                checkBoxAño.Enabled = true;
-                checkBoxTodo.Enabled = true;
+                checkBoxTodo.Enabled = checkBoxMarca.Enabled = checkBoxColor.Enabled = checkBoxAño.Enabled = true;
                 txtCodigo.Enabled = false;
             }            
         }
@@ -135,19 +127,13 @@ namespace WFAppTPi_ProgramacionII
 
             if (checkBoxMarca.Checked)
             {
-                checkBoxCodigo.Enabled = false;
-                checkBoxColor.Enabled = false;
-                checkBoxAño.Enabled = false;
-                checkBoxTodo.Enabled = false;
+                checkBoxTodo.Enabled = checkBoxCodigo.Enabled = checkBoxColor.Enabled = checkBoxAño.Enabled = false;
                 txtMarca.Enabled = true;
                 txtMarca.Focus();
             }
             else
             {
-                checkBoxCodigo.Enabled = true;
-                checkBoxColor.Enabled = true;
-                checkBoxAño.Enabled = true;
-                checkBoxTodo.Enabled = true;
+                checkBoxTodo.Enabled = checkBoxCodigo.Enabled = checkBoxColor.Enabled = checkBoxAño.Enabled = true;
                 txtMarca.Enabled = false;
             }            
         }
@@ -157,19 +143,13 @@ namespace WFAppTPi_ProgramacionII
 
             if(checkBoxAño.Checked)
             {
-                checkBoxCodigo.Enabled = false;
-                checkBoxMarca.Enabled = false;
-                checkBoxColor.Enabled = false;
-                checkBoxTodo.Enabled = false;
+                checkBoxTodo.Enabled = checkBoxCodigo.Enabled = checkBoxMarca.Enabled = checkBoxColor.Enabled = false;
                 txtAño.Enabled = true;
                 txtAño.Focus();
             }
             else
             {
-                checkBoxCodigo.Enabled = true;
-                checkBoxMarca.Enabled = true;
-                checkBoxColor.Enabled = true;
-                checkBoxTodo.Enabled = true;
+                checkBoxTodo.Enabled = checkBoxCodigo.Enabled = checkBoxMarca.Enabled = checkBoxColor.Enabled = true;
                 txtAño.Enabled = false;
             }
         }
@@ -180,19 +160,13 @@ namespace WFAppTPi_ProgramacionII
 
             if (checkBoxColor.Checked)
             {
-                checkBoxCodigo.Enabled = false;
-                checkBoxAño.Enabled = false;
-                checkBoxMarca.Enabled = false;
-                checkBoxTodo.Enabled = false;
+                checkBoxTodo.Enabled = checkBoxCodigo.Enabled = checkBoxMarca.Enabled = checkBoxAño.Enabled = false;
                 txtColor.Enabled = true;
                 txtColor.Focus();
             }
             else
             {
-                checkBoxCodigo.Enabled = true;
-                checkBoxAño.Enabled = true;
-                checkBoxMarca.Enabled = true;
-                checkBoxTodo.Enabled = true;
+                checkBoxTodo.Enabled = checkBoxCodigo.Enabled = checkBoxMarca.Enabled = checkBoxAño.Enabled = true;
                 txtColor.Enabled = false;
             }
         }
@@ -200,82 +174,63 @@ namespace WFAppTPi_ProgramacionII
         {
             if (checkBoxTodo.Checked)
             {
-                checkBoxCodigo.Enabled = false;
-                checkBoxAño.Enabled = false;
-                checkBoxMarca.Enabled = false;
-                checkBoxColor.Enabled = false;
+                checkBoxColor.Enabled = checkBoxCodigo.Enabled = checkBoxMarca.Enabled = checkBoxAño.Enabled = false;
                 BtnConsulta.Text = "Consultar Todo";
             }
             else
             {
-                checkBoxCodigo.Enabled = true;
-                checkBoxAño.Enabled = true;
-                checkBoxMarca.Enabled = true;
-                checkBoxColor.Enabled = true;
+                checkBoxColor.Enabled = checkBoxCodigo.Enabled = checkBoxMarca.Enabled = checkBoxAño.Enabled = true;
                 BtnConsulta.Text = "Consultar con Filtros";
             }
         }
 
         //Eventos de validacion de Entrada de los TextBox
-        private void txtCodigo_KeyPress(object sender, KeyPressEventArgs e)
+        private void ValidarSoloNumeros(KeyPressEventArgs e)    //Metodo que solo perimite que se lean por teclado números y la tecla de borrado
         {
             if (!char.IsDigit(e.KeyChar) && (e.KeyChar != (char)Keys.Back))
             {
-
                 e.Handled = true;
 
                 c++;
-                if (c == 2)
+                if (c == 2) //al ingresar 2 valores no validos se le envía un Advertencia al Usuario
                 {
                     MessageBox.Show("Ingrese solo Números", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     c = 0;
                 }
             }
+        }
+        private void ValidarSoloLetras(KeyPressEventArgs e)
+        {
+            if (!char.IsLetter(e.KeyChar) && e.KeyChar != (char)Keys.Back)
+            {
+                e.Handled = true;
+
+                c++;
+                if (c == 2)
+                {
+                    MessageBox.Show("Ingrese solo Letras", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    c = 0;
+                }
+            }
+        }
+        private void txtCodigo_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            ValidarSoloNumeros(e);
         }
 
         private void txtAño_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsDigit(e.KeyChar) && (e.KeyChar != (char)Keys.Back))
-            {
-                e.Handled = true;
-
-                c++;
-                if (c == 2)
-                {
-                    MessageBox.Show("Ingrese solo Números", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    c = 0;
-                }
-            }
+            ValidarSoloNumeros(e);
         }
 
         private void txtMarca_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsLetter(e.KeyChar) && e.KeyChar != (char)Keys.Back)
-            {
-                e.Handled = true;
-
-                c++;
-                if (c == 2)
-                {
-                    MessageBox.Show("Ingrese solo Letras", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    c = 0;
-                }
-            }
+            ValidarSoloLetras(e);
         }
 
         private void txtColor_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsLetter(e.KeyChar) && e.KeyChar != (char)Keys.Back)
-            {
-                e.Handled = true;
-
-                c++;
-                if (c == 2)
-                {
-                    MessageBox.Show("Ingrese solo Letras", "Aviso", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    c = 0;
-                }
-            }
+            ValidarSoloLetras(e);
         }
     }
 }

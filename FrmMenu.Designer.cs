@@ -65,6 +65,7 @@
             this.lblhora = new System.Windows.Forms.Label();
             this.iconLogoPanelContenedor = new System.Windows.Forms.PictureBox();
             this.timerReloj = new System.Windows.Forms.Timer(this.components);
+            this.timerDia = new System.Windows.Forms.Timer(this.components);
             this.PanelMenuVertical.SuspendLayout();
             this.PanelMenuContraido.SuspendLayout();
             this.PanelMenuExpandido.SuspendLayout();
@@ -674,6 +675,11 @@
             this.timerReloj.Interval = 1000;
             this.timerReloj.Tick += new System.EventHandler(this.timerReloj_Tick);
             // 
+            // timerDia
+            // 
+            this.timerDia.Interval = 300000;
+            this.timerDia.Tick += new System.EventHandler(this.timerDia_Tick);
+            // 
             // FrmMenu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -747,5 +753,6 @@
         private System.Windows.Forms.Label lblFecha;
         private System.Windows.Forms.Label lblhora;
         private System.Windows.Forms.Timer timerReloj;
+        private System.Windows.Forms.Timer timerDia;
     }
 }

@@ -15,6 +15,7 @@ namespace WFAppTPi_ProgramacionII
         public FrmABMAutomovil()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
         }
 
 
@@ -30,7 +31,7 @@ namespace WFAppTPi_ProgramacionII
 
             CargarListBox("viewCargarAutos");
 
-            txtCodigo.Enabled = false;
+            txtCodigo.Enabled = false;  //Constante a lo largo de todo el programa
             HabilitarBotones(false);
         }
 
@@ -52,10 +53,7 @@ namespace WFAppTPi_ProgramacionII
                 e.Cancel = false;
             }
             else
-            {
                 e.Cancel = true;
-            }
-
         }
 
         private void FrmABMAutomovil_FormClosed(object sender, FormClosedEventArgs e)
@@ -80,7 +78,6 @@ namespace WFAppTPi_ProgramacionII
         private void BtnEditar_Click(object sender, EventArgs e)
         {
             HabilitarBotones(true);
-            txtCodigo.Enabled = false;
 
             NuevoRegistro = false;
         }
@@ -189,7 +186,7 @@ namespace WFAppTPi_ProgramacionII
         {
             HabilitarBotones(false);
             NuevoRegistro = false;
-            txtAlto.Clear();
+            txtAlto.Clear(); //porque las dimenciones se muestran en un label y no en cada textbox
             txtAncho.Clear();
             txtLargo.Clear();
             ListBoxAutos.SelectedIndex = 0;
@@ -540,35 +537,6 @@ namespace WFAppTPi_ProgramacionII
         private void HabilitarBotones(bool x)   // habilita o deshabilita los campos y botones según la operacion que se esté realizando en el Form
         {
             groupBoxCargaAuto.Enabled = x;
-            /*cboMarca.Enabled = x;
-            txtModelo.Enabled = x;
-            numericAño.Enabled = x;
-            txtLargo.Enabled = x;
-            txtAncho.Enabled = x;
-            txtAlto.Enabled = x;
-            txtMotor.Enabled = x;
-            cboCombustible.Enabled = x;
-            cboCajaVeloc.Enabled = x;
-            numericVelocidades.Enabled = x;
-            cboTipoDirecc.Enabled = x;
-            cboColor.Enabled = x;
-            txtTamLlantas.Enabled = x;
-            numericCantAirbag.Enabled = x;
-            checkBoxCantPuertas_3.Enabled = x;
-            checkBoxCantPuertas_5.Enabled = x;
-            checkBoxCamRetroceso_Si.Enabled = x;        
-            checkBoxCamRetroceso_No.Enabled = x;
-            checkBoxSensLuvia_Si.Enabled = x;        
-            checkBoxSensLuvia_No.Enabled = x;    
-            checkBoxTechoCielo_Si.Enabled = x;        
-            checkBoxTechoCielo_No.Enabled = x;    
-            checkBoxClimatizador_Si.Enabled = x;
-            checkBoxClimatizador_No.Enabled = x;    
-            checkBoxLevantaVidrio_Si.Enabled = x;
-            checkBoxLevantaVidrio_No.Enabled = x;               
-            checkBoxCierreCentral_Si.Enabled = x;
-            checkBoxCierreCentral_No.Enabled = x;
-            txtAudioConectividad.Enabled = x;    */
             BtnCancelar.Enabled = x;
             BtnGuardar.Enabled = x;
 
