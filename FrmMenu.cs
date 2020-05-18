@@ -12,12 +12,12 @@ using FontAwesome.Sharp; //para poder interactuar con las propiedades de los obj
 
 namespace WFAppTPi_ProgramacionII
 {
-    //iconos de botones del paquete NuGet: FontAwesome.Sharp
+    //iconos de botonesdel paquete NuGet: FontAwesome.Sharp
     public partial class FrmMenu : Form
     {
         private Form activeForm = null; //formulario hijo que se encuentra abierto en este menú
         private IconButton currentBtn;  //var aux que guarda el boton que se va a modificar
-        private Panel borderBtn;    //pequeño panel que resaltara el borde izquierdo del boton cuando se lo seleccione
+        private Panel borderBtn;    //pequeño panel que resaltara el borde izquierdo del boton
 
         static private bool FormChildClosed = false;    //valor que verifica que el formulario hijo se haya cerrado antes de abrir otro formulario
 
@@ -34,7 +34,7 @@ namespace WFAppTPi_ProgramacionII
             borderBtn = new Panel();
             borderBtn.Size = new Size(7,40);
             PanelMenuExpandido.Controls.Add(borderBtn);
-            timerReloj.Enabled = timerDia.Enabled = true;
+            timerReloj.Enabled = true;
         }
 
         [DllImport("user32.DLL", EntryPoint = "ReleaseCapture")]    //librerias del sistema para mover ventana desde el panel superior
@@ -51,7 +51,7 @@ namespace WFAppTPi_ProgramacionII
         private void FrmMenu_Load(object sender, EventArgs e)
         {
             Expandir_Contraer_Menu();
-            lblhora.Text = DateTime.Now.ToString("HH:mm:ss");
+            lblhora.Text = DateTime.Now.ToString("HH:mm:ss ");
             lblFecha.Text = DateTime.Now.ToLongDateString();
         }
 
@@ -71,16 +71,16 @@ namespace WFAppTPi_ProgramacionII
 
         private void Expandir_Contraer_Menu()
         {
-            if (PanelMenuVertical.Width == 190) //Contraer
+            if (PanelMenuVertical.Width == 190)
             {
                 PanelMenuVertical.Width = 58;
                 iconLogoPrincipal.Visible = false;
                 iconConfiguration.Visible = true;
                 PanelLogos_Menu.Height = 70;
-                PanelMenuExpandido.Visible = false;  //panel que contiene todos los botones de manera completa con sus iconos y nombres
-                PanelMenuContraido.Visible = true;   //panel que solo contiene los iconos de los botones
+                PanelMenuExpandido.Visible = false;
+                PanelMenuContraido.Visible = true;      
             }
-            else                                 //Expandir
+            else
             {
                 PanelMenuVertical.Width = 190;
                 iconConfiguration.Visible = false;
@@ -104,16 +104,18 @@ namespace WFAppTPi_ProgramacionII
             iconBtnMax.Visible = false;
             iconBtnRes.Visible = true;
         }
+
+        private void iconBtnMin_Click(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Minimized;
+        }
+
         private void iconBtnRes_Click(object sender, EventArgs e)
         {
             WindowState = FormWindowState.Normal;
             iconBtnMax.Visible = true;
             iconBtnRes.Visible = false;
         }
-        private void iconBtnMin_Click(object sender, EventArgs e)
-        {
-            WindowState = FormWindowState.Minimized;
-        }        
         #endregion        
 
         //
@@ -131,7 +133,7 @@ namespace WFAppTPi_ProgramacionII
             }
         }
 
-        private void MostrarSubMenu(Panel subMenu, object senderBtn, Color RGBcolor)    //oculta los demas submenus y muestra el del boton correspondiente, si ya esta visible, lo oculta y restaura el boton
+        private void MostrarSubMenu(Panel subMenu, object senderBtn, Color RGBcolor)    //oculta los demas submenus y muestra el del boton correspondiente, si ya esta visible, lo oculta
         {
             if (!subMenu.Visible)
             {
@@ -147,7 +149,6 @@ namespace WFAppTPi_ProgramacionII
                 
                 
         }
-
         //ReDiseño de los botones seleccionados
         private void ResaltarBoton(object senderBtn, Color color)
         {
@@ -277,7 +278,7 @@ namespace WFAppTPi_ProgramacionII
             {
                 activeForm.Close();
 
-                if (FormChildClosed)    //verifica que efectivamente se haya cerrado el formulario
+                if (FormChildClosed)
                 {
                     OpenForm(childForm);
 
@@ -301,20 +302,16 @@ namespace WFAppTPi_ProgramacionII
             childForm.Show();
         }
 
-        private void timerReloj_Tick(object sender, EventArgs e)    //cada 1 segundo
+        private void timerReloj_Tick(object sender, EventArgs e)
         {
-            lblhora.Text = DateTime.Now.ToLongTimeString();            
-        }
-        private void timerDia_Tick(object sender, EventArgs e)  //cada 5 minutos
-        {
-            lblFecha.Text = DateTime.Now.ToLongDateString();
+            lblhora.Text = DateTime.Now.ToLongTimeString();
+            //lblFecha.Text = DateTime.Now.ToLongDateString();
         }
 
         private void FrmMenu_FormClosing(object sender, FormClosingEventArgs e)
         {
             timerReloj.Stop(); // .Enabled = false;
-            timerDia.Stop();
-        }        
+        }
     }
 }
  
