@@ -1,5 +1,5 @@
 # About the App
-**Programa de escritorio para concesionaria**
+**Programa de escritorio para concesionaria**<br/>
 Puede visualizar capturas del programa en funcionamiento antes de descargarlo si así lo desea, 
 en la carpeta **'Capturas'**.<br/>
 La Aplicación que se encuentra a continuación esta diseñada para poder crear, modificar o eliminar
